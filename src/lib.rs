@@ -1,10 +1,10 @@
-use crate::math::{random_normal_matrix, sigmoid};
+use crate::math::{dot_product, random_normal_matrix, sigmoid, traspose_matrix};
 
 mod math;
 
-type ActivationFunction = fn(f64) -> f64;
+type ActivationFunction = fn(Vec<Vec<f64>>) -> Vec<Vec<f64>>;
 
-struct NeuralNetwork {
+pub struct NeuralNetwork {
     weights_in_hid: Vec<Vec<f64>>,
     weights_hid_out: Vec<Vec<f64>>,
     learning_rate: f64,
@@ -28,6 +28,20 @@ impl NeuralNetwork {
             (output_nodes_number as f64).powf(-0.5), 
             (output_nodes_number, hidden_nodes_number)
         );
-        NeuralNetwork { weights_in_hid, weights_hid_out, learning_rate, activation_fn: sigmoid }
+        let activation_fn = |x: Vec<Vec<f64>>| -> Vec<Vec<f64>> {
+            x.into_iter()
+                .map(|row| row.into_iter().map(sigmoid).collect())
+                .collect()
+        };
+        NeuralNetwork { weights_in_hid, weights_hid_out, learning_rate, activation_fn}
+    }
+
+    pub fn query(&self, input_list: Vec<f64>) -> Vec<Vec<f64>> {
+        let inputs = traspose_matrix(&vec![input_list]);
+        let hidden_inputs = dot_product(&self.weights_in_hid, &inputs);
+        let hidden_outputs = (self.activation_fn)(hidden_inputs);
+        let final_inputs = dot_product(&self.weights_hid_out, &hidden_outputs);
+        let final_outputs = (self.activation_fn)(final_inputs);
+        final_outputs
     }
 }
