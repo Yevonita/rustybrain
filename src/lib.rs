@@ -1,4 +1,4 @@
-use crate::math::{dot_product, random_normal_matrix, sigmoid, traspose_matrix};
+use crate::math::{dot_product, matrix_elementwise_mul, matrix_scale, matrix_subtract, random_normal_matrix, sigmoid, sigmoid_derivative, traspose_matrix};
 
 mod math;
 
@@ -43,5 +43,45 @@ impl NeuralNetwork {
         let final_inputs = dot_product(&self.weights_hid_out, &hidden_outputs);
         let final_outputs = (self.activation_fn)(final_inputs);
         final_outputs
+    }
+
+    pub fn train(&mut self, input_list: Vec<f64>, target_list: Vec<f64>) {
+        let inputs = traspose_matrix(&vec![input_list]);
+        let targets = traspose_matrix(&vec![target_list]);
+
+        // Forward pass
+        let hidden_inputs = dot_product(&self.weights_in_hid, &inputs);
+        let hidden_outputs = (self.activation_fn)(hidden_inputs);
+        let final_inputs = dot_product(&self.weights_hid_out, &hidden_outputs);
+        let final_outputs = (self.activation_fn)(final_inputs);
+
+        // Output error
+        let output_errors = matrix_subtract(&targets, &final_outputs);
+
+        // Output gradient
+        let output_grad = matrix_elementwise_mul(
+            &output_errors,
+            &sigmoid_derivative(&final_outputs)
+        );
+        let delta_weights_hid_out = matrix_scale(
+            &dot_product(&output_grad, &traspose_matrix(&hidden_outputs)),
+            self.learning_rate
+        );
+        self.weights_hid_out = matrix_subtract(&self.weights_hid_out, &delta_weights_hid_out);
+
+        // Hidden layer error
+        let hidden_errors = dot_product(&traspose_matrix(&self.weights_hid_out), &output_grad);
+
+        // Hidden gradient
+        let hidden_grad = matrix_elementwise_mul(
+            &hidden_errors,
+            &sigmoid_derivative(&hidden_outputs)
+        );
+        let delta_weights_in_hid = matrix_scale(
+            &dot_product(&hidden_grad, &traspose_matrix(&inputs)),
+            self.learning_rate
+        );
+        self.weights_in_hid = matrix_subtract(&self.weights_in_hid, &delta_weights_in_hid);
+
     }
 }
