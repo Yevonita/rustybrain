@@ -56,7 +56,6 @@ pub fn dot_product(matrix_a: &Vec<Vec<f64>>, matrix_b: &Vec<Vec<f64>>) -> Vec<Ve
         }
     }
     result
-
 }
 
 pub fn sigmoid(x: f64) -> f64 {
@@ -73,6 +72,21 @@ pub fn matrix_subtract(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
             row_a.iter()
                 .zip(row_b.iter())
                 .map(|(x, y)| x - y)
+                .collect()
+        })
+        .collect()
+}
+
+pub fn matrix_add(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    if a.len() != b.len() || a[0].len() != b[0].len() {
+        panic!("Matrix dimensions do not match for addition");
+    }
+    a.iter()
+        .zip(b.iter())
+        .map(|(row_a, row_b)| {
+            row_a.iter()
+                .zip(row_b.iter())
+                .map(|(x, y)| x + y)
                 .collect()
         })
         .collect()
@@ -108,9 +122,8 @@ pub fn matrix_scale(matrix: &Vec<Vec<f64>>, scalar: f64) -> Vec<Vec<f64>> {
         .collect()
 }
 
+#[cfg(test)]
 mod tests {
-    use std::vec;
-
     use super::*;
 
     #[test]
@@ -118,7 +131,7 @@ mod tests {
         let input = 0.4;
         let expected = 0.598687660112452;
         let actual = sigmoid(input);
-        assert_eq!(expected, actual, "Expected result from sigmoid of 0.4 is 0.598687660112452");
+        assert_eq!(expected, actual, "Expected result from sigmoid of 0.4 is 0.598687660112452");Matrix dimensions do not match for subtraction
     }
 
     #[test]
