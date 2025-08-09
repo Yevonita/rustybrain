@@ -40,6 +40,64 @@ fn main() {
 }
 ```
 
+## MNIST Digit Classification Example
+
+The library includes a complete example demonstrating neural network training on the MNIST dataset for digit classification. This example shows how to use rustybrain for a real-world machine learning task.
+
+### Running the Example
+
+```bash
+cargo run --example mnist_csv
+```
+
+### What the Example Does
+
+The MNIST example demonstrates:
+
+- **Data Loading**: Reading CSV files containing MNIST digit data
+- **Data Preprocessing**: Normalizing pixel values (0-255 → 0-1) and one-hot encoding labels
+- **Network Architecture**: 784 input nodes (28×28 pixels), 200 hidden nodes, 10 output nodes (digits 0-9)
+- **Training**: 50 epochs of backpropagation with a learning rate of 0.3
+- **Evaluation**: Testing on a separate dataset and calculating accuracy
+
+### Expected Output
+
+```
+Training on 100 samples
+Epoch 10
+Epoch 20
+Epoch 30
+Epoch 40
+Epoch 50
+Testing on 10 samples
+Predicted: 7, Actual: 7
+Predicted: 3, Actual: 2
+Predicted: 1, Actual: 1
+Predicted: 0, Actual: 0
+Predicted: 4, Actual: 4
+...
+Accuracy: 50.00%
+```
+
+### Data Files
+
+The example uses two CSV files in the `examples/data/` directory:
+- `mnist_train_100.csv`: 100 training samples
+- `mnist_test_10.csv`: 10 test samples
+
+Each CSV file contains:
+- First column: digit label (0-9)
+- Remaining 784 columns: pixel values (0-255)
+
+### Key Features Demonstrated
+
+- **Matrix Operations**: Efficient handling of large input vectors (784 dimensions)
+- **Backpropagation**: Proper weight updates using gradient descent
+- **Classification**: Multi-class classification with one-hot encoded targets
+- **Performance**: Achieving reasonable accuracy on a real dataset
+
+This example serves as both a practical demonstration and a template for implementing other classification tasks with rustybrain.
+
 ## Roadmap
 
 Planned future improvements:
