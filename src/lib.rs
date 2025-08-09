@@ -1,4 +1,4 @@
-use crate::math::{dot_product, matrix_elementwise_mul, matrix_scale, matrix_subtract, random_normal_matrix, sigmoid, sigmoid_derivative, traspose_matrix};
+use crate::math::{dot_product, matrix_add, matrix_elementwise_mul, matrix_scale, matrix_subtract, random_normal_matrix, sigmoid, sigmoid_derivative, traspose_matrix};
 
 mod math;
 
@@ -20,12 +20,12 @@ impl NeuralNetwork {
     ) -> NeuralNetwork {
         let weights_in_hid = random_normal_matrix(
             0.0, 
-            (hidden_nodes_number as f64).powf(-0.5), 
+            0.001, // Much smaller standard deviation
             (hidden_nodes_number, input_nodes_number)
         );
         let weights_hid_out = random_normal_matrix(
             0.0, 
-            (output_nodes_number as f64).powf(-0.5), 
+            0.001, // Much smaller standard deviation
             (output_nodes_number, hidden_nodes_number)
         );
         let activation_fn = |x: Vec<Vec<f64>>| -> Vec<Vec<f64>> {
@@ -63,13 +63,15 @@ impl NeuralNetwork {
             &output_errors,
             &sigmoid_derivative(&final_outputs)
         );
+        
+        // Update weights from hidden to output
         let delta_weights_hid_out = matrix_scale(
             &dot_product(&output_grad, &traspose_matrix(&hidden_outputs)),
             self.learning_rate
         );
-        self.weights_hid_out = matrix_subtract(&self.weights_hid_out, &delta_weights_hid_out);
+        self.weights_hid_out = matrix_add(&self.weights_hid_out, &delta_weights_hid_out);
 
-        // Hidden layer error
+        // Hidden layer error - fixed calculation
         let hidden_errors = dot_product(&traspose_matrix(&self.weights_hid_out), &output_grad);
 
         // Hidden gradient
@@ -77,11 +79,12 @@ impl NeuralNetwork {
             &hidden_errors,
             &sigmoid_derivative(&hidden_outputs)
         );
+        
+        // Update weights from input to hidden
         let delta_weights_in_hid = matrix_scale(
             &dot_product(&hidden_grad, &traspose_matrix(&inputs)),
             self.learning_rate
         );
-        self.weights_in_hid = matrix_subtract(&self.weights_in_hid, &delta_weights_in_hid);
-
+        self.weights_in_hid = matrix_add(&self.weights_in_hid, &delta_weights_in_hid);
     }
 }
