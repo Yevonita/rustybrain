@@ -131,7 +131,7 @@ mod tests {
         let input = 0.4;
         let expected = 0.598687660112452;
         let actual = sigmoid(input);
-        assert_eq!(expected, actual, "Expected result from sigmoid of 0.4 is 0.598687660112452");Matrix dimensions do not match for subtraction
+        assert_eq!(expected, actual, "Expected result from sigmoid of 0.4 is 0.598687660112452");
     }
 
     #[test]
